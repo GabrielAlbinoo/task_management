@@ -8,7 +8,7 @@
 ## Passo a passo
 1. Clonar o repositório:
    ```bash
-   git clone <URL_DO_REPOSITORIO> task_management && cd task_management
+   git clone https://github.com/GabrielAlbinoo/task_management task_management && cd task_management
    ```
 2. Instalar dependências PHP:
    ```bash
