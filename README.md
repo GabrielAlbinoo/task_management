@@ -28,8 +28,8 @@ task_management/
 ##  Instalação e Configuração
 
 ### Pré-requisitos
-- PHP 8.2+
-- Composer
+- PHP 8.2+ (https://www.php.net/downloads.php)
+- Composer (https://getcomposer.org/download/)
 - Node.js 18+
 - Docker e Docker Compose
 - Expo CLI
