@@ -18,4 +18,9 @@ class Task extends Model
     
     const CREATED_AT = 'criado_em';
     const UPDATED_AT = 'atualizado_em';
+
+    protected $casts = [
+        'criado_em' => 'datetime',
+        'atualizado_em' => 'datetime',
+    ];
 }

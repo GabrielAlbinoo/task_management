@@ -3,10 +3,9 @@
 namespace App\Services;
 
 use App\Models\Task;
-use App\Http\Requests\TaskRequest;
 use App\Exceptions\ApiException;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class TaskService
@@ -63,7 +62,7 @@ class TaskService
         }
     }
 
-    private function applyFilters($query, array $filters): void
+    private function applyFilters(Builder $query, array $filters): void
     {
         if (!empty($filters['priority'])) {
             $query->where('prioridade', $filters['priority']);

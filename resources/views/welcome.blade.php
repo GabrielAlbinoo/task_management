@@ -7,12 +7,8 @@
     @livewireStyles
 </head>
 <body>
-    <h1>Tarefas</h1>
-    <ul>
-        <li>Tarefa 1</li>
-        <li>Tarefa 2</li>
-        <li>Tarefa 3</li>
-    </ul>
+    <livewire:task />
+
 
     @livewireScripts
 </body>
