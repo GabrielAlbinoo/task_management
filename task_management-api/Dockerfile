@@ -12,12 +12,6 @@ WORKDIR /var/www/html
 
 COPY . /var/www/html
 
-RUN composer install
-
-RUN cp .env.example .env || true
-
-RUN php artisan key:generate || true
-
 EXPOSE 9000
 
 CMD ["php-fpm"]
