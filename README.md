@@ -35,6 +35,19 @@ task_management/
 - Expo CLI
 
 ### API (Backend)
+
+- Inicie o Docker
+- adicione essas extensões ao php .ini (ou copie o que está no repositório)
+
+```bash
+extension=pdo_pgsql
+extension=pgsql
+extension=fileinfo
+extension=openssl
+extension=zip
+extension_dir = "./ext"
+```
+
 ```bash
 cd task_management-api
 composer install
