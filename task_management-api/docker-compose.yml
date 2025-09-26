@@ -18,6 +18,23 @@ services:
       timeout: 5s
       retries: 10
 
+  app:
+    build: .
+    container_name: task_management-app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_DATABASE: task_management
+      DB_USERNAME: admin
+      DB_PASSWORD: secret123
+    command: bash -c "php artisan migrate && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
+
 volumes:
   pgdata:
 
