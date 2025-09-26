@@ -45,6 +45,7 @@ extension=pgsql
 extension=fileinfo
 extension=openssl
 extension=zip
+extension=mbstring
 extension_dir = "./ext"
 ```
 
