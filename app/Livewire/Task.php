@@ -2,7 +2,10 @@
 
 namespace App\Livewire;
 
-use App\Models\Task as TaskModel;
+use App\Models\User;
+use App\Http\Requests\TaskRequest;
+use App\Services\TaskService;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -15,21 +18,14 @@ class Task extends Component
 
     public $titulo = '';
     public $descricao = '';
-    public $status = 'aberto';
-    public $prioridade = 'media';
-    public $responsavel = '';
+    public $status = '';
+    public $prioridade = 'baixa';
+    public $responsavel = null;
+    public $users = [];
 
     public $search = '';
     public $filterStatus = '';
-    public $filterPrioridade = '';
-
-    protected $rules = [
-        'titulo' => 'required|string|max:255|min:3',
-        'descricao' => 'nullable|string|max:1000',
-        'status' => 'nullable|in:aberto,em_andamento,finalizado',
-        'prioridade' => 'nullable|in:baixa,media,alta',
-        'responsavel' => 'nullable|string|max:100',
-    ];
+    public $filterPriority = '';
 
     public function openCreateModal(): void
     {
@@ -38,15 +34,19 @@ class Task extends Component
         $this->modalOpen = true;
     }
 
-    public function openEditModal(int $id): void
+    public function openEditModal(TaskService $service, int $id): void
     {
-        $task = TaskModel::findOrFail($id);
+        if (empty($this->users)) {
+            $this->users = User::query()->orderBy('name')->get(['id','name','email'])->toArray();
+        }
+        
+        $task = $service->findTask($id);
         $this->editingId = $task->id;
         $this->titulo = $task->titulo ?? '';
         $this->descricao = $task->descricao ?? '';
         $this->status = $task->status ?? 'aberto';
         $this->prioridade = $task->prioridade ?? 'media';
-        $this->responsavel = $task->responsavel ?? '';
+        $this->responsavel = $task->responsavel ?? null;
         $this->modalOpen = true;
     }
 
@@ -55,15 +55,16 @@ class Task extends Component
         $this->modalOpen = false;
     }
 
-    public function save(): void
+    public function save(TaskService $service): void
     {
-        $this->validate();
-
         if ($this->editingId) {
-            $task = TaskModel::findOrFail($this->editingId);
-            $task->update($this->only(['titulo', 'descricao', 'status', 'prioridade', 'responsavel']));
+            $this->validate(TaskRequest::rulesForUpdate());
+            $payload = $this->only(['titulo', 'descricao', 'prioridade', 'status', 'responsavel']);
+            $service->updateTask($this->editingId, $payload);
         } else {
-            TaskModel::create($this->only(['titulo', 'descricao', 'status', 'prioridade', 'responsavel']));
+            $payload = $this->only(['titulo', 'descricao', 'prioridade']);
+            Validator::make($payload, TaskRequest::rulesForStore())->validate();
+            $service->createTask($payload);
         }
 
         $this->closeModal();
@@ -71,10 +72,9 @@ class Task extends Component
         $this->resetPage();
     }
 
-    public function delete(int $id): void
+    public function delete(TaskService $service, int $id): void
     {
-        $task = TaskModel::findOrFail($id);
-        $task->delete();
+        $service->deleteTask($id);
         $this->resetPage();
     }
 
@@ -82,46 +82,29 @@ class Task extends Component
     {
         $this->titulo = '';
         $this->descricao = '';
-        $this->status = 'aberto';
-        $this->prioridade = 'media';
-        $this->responsavel = '';
+        $this->status = '';
+        $this->prioridade = 'baixa';
+        $this->responsavel = null;
+    }
+
+    public function resetPageOnFilter(): void
+    {
+        $this->resetPage();
+    }
+
+    public function getTasksProperty(TaskService $service)
+    {
+        $filters = [
+            'search' => $this->search,
+            'status' => $this->filterStatus,
+            'priority' => $this->filterPriority,
+        ];
+
+        return $service->getAllTasks($filters, 10);
     }
 
     public function render()
     {
-        $query = TaskModel::query();
-
-        if ($this->search !== '') {
-            $query->where('titulo', 'like', '%' . $this->search . '%');
-        }
-
-        if ($this->filterStatus !== '') {
-            $query->where('status', $this->filterStatus);
-        }
-
-        if ($this->filterPrioridade !== '') {
-            $query->where('prioridade', $this->filterPrioridade);
-        }
-
-        $tasks = $query->orderByDesc('criado_em')->paginate(10);
-
-        return view('livewire.task', [
-            'tasks' => $tasks,
-        ]);
-    }
-
-    public function updatingSearch(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedFilterStatus(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedFilterPrioridade(): void
-    {
-        $this->resetPage();
+        return view('livewire.task');
     }
 }

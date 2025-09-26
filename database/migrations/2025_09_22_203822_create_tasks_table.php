@@ -17,9 +17,13 @@ return new class extends Migration
             $table->text('descricao')->nullable();
             $table->enum('status', ['aberto', 'em_andamento', 'finalizado'])->default('aberto');
             $table->enum('prioridade', ['baixa', 'media', 'alta'])->default('media');
-            $table->string('responsavel')->nullable();
+            $table->foreignId('responsavel')->nullable()->constrained('users')->nullOnDelete()->index();
             $table->timestamp('criado_em')->useCurrent();
             $table->timestamp('atualizado_em')->useCurrentOnUpdate()->useCurrent();
+
+            $table->index('status');
+            $table->index('prioridade');
+            $table->index('titulo');
         });
     }
 

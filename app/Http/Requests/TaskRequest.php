@@ -21,12 +21,34 @@ class TaskRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isStore = $this->isMethod('post');
+
+        return $isStore
+            ? self::rulesForStore()
+            : self::rulesForUpdate();
+    }
+
+    public static function rulesForStore(): array
+    {
+        $rules = [
+            'titulo' => 'required|string|max:255|min:3',
+            'descricao' => 'nullable|string|max:1000',
+            'prioridade' => 'nullable|in:baixa,media,alta',
+            'status' => 'prohibited',
+            'responsavel' => 'prohibited',
+        ];
+
+        return $rules;
+    }
+
+    public static function rulesForUpdate(): array
+    {
         return [
             'titulo' => 'required|string|max:255|min:3',
             'descricao' => 'nullable|string|max:1000',
-            'status' => 'nullable|in:aberto,em_andamento,finalizado',
             'prioridade' => 'nullable|in:baixa,media,alta',
-            'responsavel' => 'nullable|string|max:100',
+            'status' => 'nullable|in:aberto,em_andamento,finalizado',
+            'responsavel' => 'nullable|exists:users,id',
         ];
     }
 
@@ -41,7 +63,9 @@ class TaskRequest extends FormRequest
             'titulo.max' => 'O título não pode ter mais de 255 caracteres.',
             'descricao.max' => 'A descrição não pode ter mais de 1000 caracteres.',
             'prioridade.in' => 'A prioridade deve ser: baixa, media ou alta.',
-            'responsavel.max' => 'O nome do responsável não pode ter mais de 100 caracteres.',
+            'responsavel.exists' => 'O responsável informado é inválido.',
+            'status.prohibited' => 'O campo status não pode ser enviado na criação.',
+            'responsavel.prohibited' => 'O campo responsável não pode ser enviado na criação.',
         ];
     }
 }

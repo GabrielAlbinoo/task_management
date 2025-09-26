@@ -20,20 +20,6 @@ class BaseController extends Controller
         return response()->json($response, $statusCode);
     }
 
-    protected function errorResponse(string $message = 'Erro na operação', int $statusCode = 400, array $errors = []): JsonResponse
-    {
-        $response = [
-            'success' => false,
-            'message' => $message,
-        ];
-
-        if (!empty($errors)) {
-            $response['errors'] = $errors;
-        }
-
-        return response()->json($response, $statusCode);
-    }
-
     protected function successResponseWithPagination($data, string $message = 'Dados recuperados com sucesso'): JsonResponse
     {
         return response()->json([
@@ -52,11 +38,6 @@ class BaseController extends Controller
         ]);
     }
 
-    protected function successNoContent(): JsonResponse
-    {
-        return response()->noContent();
-    }
-
     protected function createdResponse($data, string $message = 'Recurso criado com sucesso'): JsonResponse
     {
         return $this->successResponse($data, $message, 201);
@@ -65,10 +46,5 @@ class BaseController extends Controller
     protected function updatedResponse($data, string $message = 'Recurso atualizado com sucesso'): JsonResponse
     {
         return $this->successResponse($data, $message, 200);
-    }
-
-    protected function deletedResponse(string $message = 'Recurso excluído com sucesso'): JsonResponse
-    {
-        return $this->successNoContent();
     }
 }

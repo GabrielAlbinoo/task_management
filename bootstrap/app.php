@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Illuminate\Auth\AuthenticationException;
 use App\Exceptions\ApiException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -31,6 +32,14 @@ return Application::configure(basePath: dirname(__DIR__))
                         'errors' => $e->errors(),
                         'status_code' => 422
                     ], 422);
+                }
+
+                if ($e instanceof AuthenticationException) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Não autorizado',
+                        'status_code' => 401
+                    ], 401);
                 }
 
                 if ($e instanceof ModelNotFoundException) {

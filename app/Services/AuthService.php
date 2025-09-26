@@ -39,7 +39,6 @@ class AuthService {
                     'email' => $user->email
                 ],
                 'token' => $token,
-                'token_type' => 'Bearer'
             ];
         } catch (ApiException $e) {
             throw $e;
@@ -51,7 +50,7 @@ class AuthService {
     public function logout(User $user)
     {
         try {
-            $user->currentAccessToken()->delete();
+            $user->tokens()->delete();
             return true;
         } catch (\Exception $e) {
             throw new ApiException('Erro ao fazer logout: ' . $e->getMessage(), 500);

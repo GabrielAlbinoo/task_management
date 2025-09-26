@@ -23,4 +23,9 @@ class Task extends Model
         'criado_em' => 'datetime',
         'atualizado_em' => 'datetime',
     ];
+
+    public function responsavelUser()
+    {
+        return $this->belongsTo(User::class, 'responsavel');
+    }
 }

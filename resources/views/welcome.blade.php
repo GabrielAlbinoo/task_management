@@ -9,7 +9,6 @@
 <body>
     <livewire:task />
 
-
     @livewireScripts
 </body>
 </html>

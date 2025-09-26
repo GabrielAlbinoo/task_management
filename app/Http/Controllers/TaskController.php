@@ -25,35 +25,50 @@ class TaskController extends BaseController
         
         $tasks = $this->taskService->getAllTasks($filters, $perPage);
         
-        return $this->successResponseWithPagination($tasks, 'Tarefas recuperadas com sucesso');
+        return $this->successResponseWithPagination($tasks, 'Tarefas listadas');
     }
 
     public function store(TaskRequest $request): JsonResponse
     {
         $task = $this->taskService->createTask($request->validated());
         
-        return $this->createdResponse($task, 'Tarefa criada com sucesso');
+        return $this->createdResponse($task, 'Tarefa criada');
     }
 
     public function update(TaskRequest $request, int $id): JsonResponse
     {
         $task = $this->taskService->updateTask($id, $request->validated());
         
-        return $this->updatedResponse($task, 'Tarefa atualizada com sucesso');
+        return $this->updatedResponse($task, 'Tarefa atualizada');
     }
     
     public function destroy(int $id): JsonResponse
     {
         $this->taskService->deleteTask($id);
-
-        return $this->successNoContent();
+        return $this->successResponse(null, 'Tarefa removida');
     }
 
     public function show(int $id): JsonResponse
     {
         $task = $this->taskService->findTask($id);
         
-        return $this->successResponse($task, 'Tarefa recuperada com sucesso');
+        return $this->successResponse($task, 'Tarefa retornada');
+    }
+
+    public function finalize(Request $request, int $id): JsonResponse
+    {
+        $userId = (int) $request->user()->id;
+        $task = $this->taskService->finalizeTask($id, $userId);
+
+        return $this->updatedResponse($task, 'Tarefa finalizada');
+    }
+
+    public function claim(Request $request, int $id): JsonResponse
+    {
+        $userId = (int) $request->user()->id;
+        $task = $this->taskService->claimTask($id, $userId);
+
+        return $this->updatedResponse($task, 'Tarefa atribuída');
     }
 
 }
