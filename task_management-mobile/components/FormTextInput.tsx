@@ -1,28 +1,39 @@
-import { colors } from '@/theme/global'
-import React from 'react'
-import { StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native'
+import { colors } from "@/theme/global";
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  View
+} from "react-native";
 
 export type FormTextInputProps = TextInputProps & {
-  label?: string
-  helperText?: string | null
-  containerStyle?: ViewStyle
-}
+  label?: string;
+};
 
 export default function FormTextInput(props: FormTextInputProps) {
-  const { label, helperText, containerStyle, style, ...inputProps } = props
+  const { label, style, ...inputProps } = props;
 
   return (
-    <View style={[styles.field, containerStyle]}> 
+    <View style={[styles.field, !label ? styles.inlineField : undefined]}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
-      <TextInput {...inputProps} style={[styles.input, style]} placeholderTextColor={colors.neutral.dark} />
-      {helperText ? <Text style={styles.helper}>{helperText}</Text> : null}
+      <TextInput
+        {...inputProps}
+        style={[styles.input, style]}
+        placeholderTextColor={colors.neutral.dark}
+      />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   field: {
     marginBottom: 12,
+  },
+  inlineField: {
+    marginBottom: 0,
+    flex: 1,
   },
   label: {
     fontSize: 14,
@@ -39,10 +50,4 @@ const styles = StyleSheet.create({
     color: colors.neutral.black,
     backgroundColor: colors.neutral.lighter,
   },
-  helper: {
-    marginTop: 6,
-    color: colors.warning,
-  },
-})
-
-
+});

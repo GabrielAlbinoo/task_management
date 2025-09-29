@@ -25,44 +25,35 @@ task_management/
 - **TypeScript** - Linguagem tipada
 - **Expo Router** - Navegação
 
-##  Instalação e Configuração
+## Guia para Rodar o Projeto
 
 ### Pré-requisitos
-- PHP 8.2+ (https://www.php.net/downloads.php)
-- Composer (https://getcomposer.org/download/)
-- Node.js 18+
 - Docker e Docker Compose
-- Expo CLI
+- Node.js 18+
+- Aplicativo **Expo Go** instalado no celular
 
-### API (Backend)
-
-- Inicie o Docker
-- adicione essas extensões ao php .ini (ou copie o que está no repositório)
-
-```bash
-extension=pdo_pgsql
-extension=pgsql
-extension=fileinfo
-extension=openssl
-extension=zip
-extension=mbstring
-extension_dir = "./ext"
-```
-
-```bash
-cd task_management-api
-composer install
-cp .env.example .env
-php artisan key:generate
-docker compose up -d db
-php artisan migrate
-php artisan db:seed
-php artisan serve
-```
-
-### Mobile (Frontend)
-```bash
-cd task_management-mobile
-npm install
-npx expo start
-```
+### Passo a passo
+1. Suba a API:
+   ```bash
+   cd task_management-api
+   docker compose up -d
+   ```
+2. Instale as dependências do app mobile:
+   ```bash
+   cd ../task_management-mobile
+   npm install
+   ```
+3. Descubra o IP local do computador (Windows):
+   ```bash
+   ipconfig
+   ```
+   Anote o endereço IPv4 para usar como base da API.
+4. Configure o `.env` do mobile com o IP encontrado:
+   ```env
+   EXPO_PUBLIC_API_URL=http://SEU_IP/api
+   ```
+5. Inicie o aplicativo mobile:
+   ```bash
+   npm start
+   ```
+6. Abra o **Expo Go** no celular e escaneie o QR Code exibido para carregar o aplicativo.

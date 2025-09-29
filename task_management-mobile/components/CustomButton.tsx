@@ -4,23 +4,28 @@ import { Pressable, StyleSheet, Text } from "react-native";
 
 interface CustomButtonProps {
   text: string;
-  variant?: 'primary' | 'outline' | 'success';
+  variant?: "primary" | "outline" | "success";
   onPress?: () => void;
+  disabled?: boolean;
 }
 
-export default function CustomButton({ 
-  text, 
-  variant = 'primary', 
-  onPress 
+export default function CustomButton({
+  text,
+  variant = "primary",
+  onPress,
+  disabled = false,
 }: CustomButtonProps) {
   return (
-    <Pressable 
-      style={[styles.button, styles[variant]]} 
+    <Pressable
+      style={[
+        styles.button,
+        styles[variant],
+        disabled ? styles.disabled : undefined,
+      ]}
       onPress={onPress}
+      disabled={disabled}
     >
-      <Text style={[styles.text, styles[`${variant}Text`]]}>
-        {text}
-      </Text>
+      <Text style={[styles.text, styles[`${variant}Text`]]}>{text}</Text>
     </Pressable>
   );
 }
@@ -30,12 +35,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    alignItems: 'center',
-    alignSelf: 'flex-start',
+    alignItems: "center",
+    alignSelf: "flex-start",
+  },
+  disabled: {
+    opacity: 0.6,
   },
   text: {
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
     fontSize: 12,
   },
   primary: {

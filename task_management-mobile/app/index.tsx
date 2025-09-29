@@ -1,47 +1,63 @@
-import FormTextInput from '@/components/FormTextInput'
-import { login as loginService } from '@/services/auth'
-import { colors } from '@/theme/global'
-import { getErrorMessage } from '@/utils/errorHandler'
-import { hasMinLength, isValidEmail } from '@/utils/validators'
-import { Ionicons } from '@expo/vector-icons'
-import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'expo-router'
-import React, { useMemo, useState } from 'react'
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import FormTextInput from "@/components/FormTextInput";
+import PasswordToggle from "@/components/PasswordToggle";
+import SubmitButton from "@/components/SubmitButton";
+import { login as loginService } from "@/services/auth";
+import { colors } from "@/theme/global";
+import { getErrorMessage } from "@/utils/errorHandler";
+import { hasMinLength, isValidEmail } from "@/utils/validators";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
+import React, { useMemo, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function Login() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const loginMutation = useMutation({
     mutationFn: loginService,
     onSuccess: () => {
-      router.replace('/open')
+      router.replace("/open");
     },
     onError: (error: any) => {
-      const errorMessage = getErrorMessage(error, 'Não foi possível autenticar. Tente novamente.');
+      const errorMessage = getErrorMessage(
+        error,
+        "Não foi possível autenticar. Tente novamente."
+      );
       setError(errorMessage);
-    }
-  })
+    },
+  });
 
-  const isEmailValid = useMemo(() => isValidEmail(email), [email])
-  const isPasswordValid = useMemo(() => hasMinLength(password, 8), [password])
-  const isFormValid = isEmailValid && isPasswordValid
+  const isEmailValid = useMemo(() => isValidEmail(email), [email]);
+  const isPasswordValid = useMemo(() => hasMinLength(password, 8), [password]);
+  const isFormValid = isEmailValid && isPasswordValid;
 
   async function handleLogin() {
     if (!isFormValid) {
-      setError('Preencha um e-mail válido e senha com pelo menos 8 caracteres.')
-      return
+      setError(
+        "Preencha um e-mail válido e senha com pelo menos 8 caracteres."
+      );
+      return;
     }
-    setError(null)
-    loginMutation.mutate({ email, password })
+    setError(null);
+    loginMutation.mutate({ email, password });
   }
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.select({ ios: 'padding', android: undefined })}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.select({ ios: "padding", android: undefined })}
+    >
       <View style={styles.card}>
         <Text style={styles.title}>Entrar</Text>
 
@@ -54,7 +70,6 @@ export default function Login() {
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="next"
-          helperText={!isEmailValid && email.length > 0 ? 'Informe um e-mail válido.' : null}
         />
 
         <View style={styles.field}>
@@ -67,40 +82,42 @@ export default function Login() {
               secureTextEntry={!showPassword}
               returnKeyType="done"
               onSubmitEditing={handleLogin}
-              containerStyle={styles.passwordInputContainer}
+              style={styles.passwordInput}
             />
-            <TouchableOpacity onPress={() => setShowPassword((v) => !v)} style={styles.toggle}>
-              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.primary} />
-            </TouchableOpacity>
+
+            <PasswordToggle
+              visible={showPassword}
+              onToggle={() => setShowPassword((v) => !v)}
+              style={styles.toggle}
+            />
           </View>
-          {!isPasswordValid && password.length > 0 ? (
-            <Text style={styles.helper}>A senha deve ter ao menos 8 caracteres.</Text>
-          ) : null}
         </View>
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <TouchableOpacity
-          disabled={!isFormValid || loginMutation.isPending}
-          style={[styles.button, (!isFormValid || loginMutation.isPending) && styles.buttonDisabled]}
+        <SubmitButton
+          text="Entrar"
           onPress={handleLogin}
-        >
-          {loginMutation.isPending ? <ActivityIndicator color={colors.neutral.white} /> : <Text style={styles.buttonText}>Entrar</Text>}
-        </TouchableOpacity>
+          loading={loginMutation.isPending}
+          disabled={!isFormValid}
+        />
 
-        <TouchableOpacity onPress={() => router.push('/register')} style={styles.secondaryLink}>
-          <Text style={styles.secondaryText}>Não tem uma conta? Registre-se</Text>
+        <TouchableOpacity
+          onPress={() => router.push("/register")}
+          style={styles.secondaryLink}
+        >
+          <Text style={styles.secondaryText}>Registre-se</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.neutral.lighter,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 24,
   },
   card: {
@@ -115,7 +132,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral.black,
     marginBottom: 16,
   },
@@ -142,16 +159,13 @@ const styles = StyleSheet.create({
     color: colors.warning,
   },
   passwordRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   passwordInput: {
     flex: 1,
   },
-  passwordInputContainer: {
-    flex: 1,
-    marginBottom: 0,
-  },
+
   toggle: {
     marginLeft: 8,
     paddingVertical: 10,
@@ -159,7 +173,7 @@ const styles = StyleSheet.create({
   },
   toggleText: {
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   error: {
     color: colors.danger,
@@ -167,27 +181,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   secondaryLink: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 12,
   },
   secondaryText: {
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
-  button: {
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: colors.buttons.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  buttonDisabled: {
-    backgroundColor: colors.neutral.light,
-  },
-  buttonText: {
-    color: colors.neutral.white,
-    fontWeight: '700',
-    fontSize: 16,
-  },
-})
+});

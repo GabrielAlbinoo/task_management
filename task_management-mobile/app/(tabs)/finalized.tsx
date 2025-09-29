@@ -1,10 +1,7 @@
-import Tasklist from '@/components/taskList'
-import React, { Component } from 'react'
+import Tasklist from "@/components/TaskList";
+import { TaskStatus } from "@/services/task";
+import React from "react";
 
-export class Finalized extends Component {
-  render() {
-    return <Tasklist taskStatus={'finalizado'} />
-  }
+export default function Finalized() {
+  return <Tasklist taskStatus={TaskStatus.DONE} />;
 }
-
-export default Finalized

@@ -53,6 +53,30 @@
             }
           }
         }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string" },
+          "errors": {
+            "type": ["object", "null"],
+            "additionalProperties": { "type": "array", "items": { "type": "string" } }
+          },
+          "status_code": { "type": "integer", "example": 403 }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "The given data was invalid." },
+          "errors": {
+            "type": "object",
+            "additionalProperties": { "type": "array", "items": { "type": "string" } }
+          },
+          "status_code": { "type": "integer", "example": 422 }
+        }
       }
     }
   },
@@ -98,7 +122,14 @@
               }
             }
           },
-          "401": { "description": "Credenciais inválidas" }
+          "401": {
+            "description": "Credenciais inválidas",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "422": {
+            "description": "Erro de validação",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+          }
         }
       }
     },
@@ -123,7 +154,31 @@
           }
         },
         "responses": {
-          "201": { "description": "Usuário criado" }
+          "201": {
+            "description": "Usuário criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "email": { "type": "string" }
+                      }
+                    },
+                    "token": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro de validação",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+          }
         }
       }
     },
@@ -133,7 +188,11 @@
         "summary": "Logout",
         "security": [{ "BearerAuth": [] }],
         "responses": {
-          "200": { "description": "Logout realizado" }
+          "200": { "description": "Logout realizado" },
+          "401": {
+            "description": "Não autenticado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
         }
       }
     },
@@ -151,7 +210,40 @@
         "responses": {
           "200": {
             "description": "Lista paginada",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedTasks" } } }
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaginatedTasks" },
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 4,
+                      "titulo": "Nova Tarefa",
+                      "descricao": null,
+                      "status": "aberto",
+                      "prioridade": "alta",
+                      "responsavel": null,
+                      "criado_em": "2025-09-23T12:25:42.000000Z",
+                      "atualizado_em": "2025-09-23T12:25:42.000000Z"
+                    }
+                  ],
+                  "pagination": {
+                    "current_page": 3,
+                    "last_page": 12,
+                    "per_page": 1,
+                    "total": 12,
+                    "from": 3,
+                    "to": 3,
+                    "has_more_pages": true
+                  },
+                  "filters_applied": []
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }
       },
@@ -177,7 +269,36 @@
           }
         },
         "responses": {
-          "201": { "description": "Tarefa criada" }
+          "201": {
+            "description": "Tarefa criada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Tarefa criada",
+                  "data": {
+                    "titulo": "teste alegal",
+                    "descricao": "AAAAAaA",
+                    "status": "aberto",
+                    "atualizado_em": "2025-09-29T05:18:57.000000Z",
+                    "criado_em": "2025-09-29T05:18:57.000000Z",
+                    "id": 28,
+                    "responsavel_nome": null,
+                    "responsavel_email": null,
+                    "responsavel_user": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "422": {
+            "description": "Erro de validação",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+          }
         }
       }
     },
@@ -189,7 +310,49 @@
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
-        "responses": { "200": { "description": "Detalhe da tarefa" }, "404": { "description": "Não encontrada" } }
+        "responses": {
+          "200": {
+            "description": "Detalhe da tarefa",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Tarefa retornada",
+                  "data": {
+                    "id": 10,
+                    "titulo": "asdasd",
+                    "descricao": "",
+                    "status": "finalizado",
+                    "prioridade": "media",
+                    "responsavel": 2,
+                    "criado_em": "2025-09-26T00:21:52.000000Z",
+                    "atualizado_em": "2025-09-28T17:37:05.000000Z",
+                    "responsavel_nome": "Teste",
+                    "responsavel_email": "teste@teste.com",
+                    "responsavel_user": {
+                      "id": 2,
+                      "name": "Teste",
+                      "email": "teste@teste.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tarefa não encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tarefa não encontrada",
+                  "errors": [],
+                  "status_code": 404
+                }
+              }
+            }
+          }
+        }
       },
       "put": {
         "tags": ["Tarefas"],
@@ -215,7 +378,45 @@
             }
           }
         },
-        "responses": { "200": { "description": "Atualizada" }, "404": { "description": "Não encontrada" } }
+        "responses": {
+          "200": {
+            "description": "Atualizada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Tarefa atualizada",
+                  "data": {
+                    "id": 28,
+                    "titulo": "teste alegal",
+                    "descricao": "AAAAAaA",
+                    "status": "aberto",
+                    "prioridade": "media",
+                    "responsavel": null,
+                    "criado_em": "2025-09-29T05:18:57.000000Z",
+                    "atualizado_em": "2025-09-29T05:18:57.000000Z",
+                    "responsavel_nome": null,
+                    "responsavel_email": null,
+                    "responsavel_user": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "403": {
+            "description": "Proibido",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": { "description": "Não encontrada" },
+          "422": {
+            "description": "Erro de validação",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+          }
+        }
       },
       "delete": {
         "tags": ["Tarefas"],
@@ -224,7 +425,32 @@
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
-        "responses": { "200": { "description": "Excluída" }, "404": { "description": "Não encontrada" } }
+        "responses": {
+          "200": {
+            "description": "Excluída",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Tarefa removida"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tarefa não encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tarefa não encontrada",
+                  "errors": [],
+                  "status_code": 404
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/tarefas/{id}/pegar": {
@@ -236,10 +462,50 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": {
-          "200": { "description": "Tarefa atribuída" },
-          "403": { "description": "Tarefa já possui responsável" },
-          "404": { "description": "Não encontrada" },
-          "422": { "description": "Não é possível pegar tarefa finalizada" }
+          "200": {
+            "description": "Tarefa atribuída",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Tarefa atribuída",
+                  "data": {
+                    "id": 4,
+                    "titulo": "aaa",
+                    "descricao": "",
+                    "status": "em_andamento",
+                    "prioridade": "baixa",
+                    "responsavel": 1,
+                    "criado_em": "2025-09-29T06:37:41.000000Z",
+                    "atualizado_em": "2025-09-29T06:37:57.000000Z",
+                    "responsavel_nome": "Alice",
+                    "responsavel_email": "alice@example.com",
+                    "responsavel_user": {
+                      "id": 1,
+                      "name": "Alice",
+                      "email": "alice@example.com",
+                      "email_verified_at": null,
+                      "created_at": "2025-09-29T06:28:55.000000Z",
+                      "updated_at": "2025-09-29T06:28:55.000000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tarefa não encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tarefa não encontrada",
+                  "errors": [],
+                  "status_code": 404
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -252,9 +518,50 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": {
-          "200": { "description": "Tarefa finalizada" },
-          "403": { "description": "Apenas o responsável pode finalizar" },
-          "404": { "description": "Não encontrada" }
+          "200": {
+            "description": "Tarefa finalizada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Tarefa finalizada",
+                  "data": {
+                    "id": 4,
+                    "titulo": "aaa",
+                    "descricao": "",
+                    "status": "finalizado",
+                    "prioridade": "baixa",
+                    "responsavel": 1,
+                    "criado_em": "2025-09-29T06:37:41.000000Z",
+                    "atualizado_em": "2025-09-29T06:38:07.000000Z",
+                    "responsavel_nome": "Alice",
+                    "responsavel_email": "alice@example.com",
+                    "responsavel_user": {
+                      "id": 1,
+                      "name": "Alice",
+                      "email": "alice@example.com",
+                      "email_verified_at": null,
+                      "created_at": "2025-09-29T06:28:55.000000Z",
+                      "updated_at": "2025-09-29T06:28:55.000000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tarefa não encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tarefa não encontrada",
+                  "errors": [],
+                  "status_code": 404
+                }
+              }
+            }
+          }
         }
       }
     }

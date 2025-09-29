@@ -7,6 +7,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 use App\Exceptions\ApiException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -35,11 +36,21 @@ return Application::configure(basePath: dirname(__DIR__))
                 }
 
                 if ($e instanceof AuthenticationException) {
+                    $hasBearerToken = (bool) $request->bearerToken();
+                    $status = $hasBearerToken ? 403 : 401;
                     return response()->json([
                         'success' => false,
-                        'message' => 'Não autorizado',
-                        'status_code' => 401
-                    ], 401);
+                        'message' => $hasBearerToken ? 'Token inválido' : 'Não autorizado',
+                        'status_code' => $status
+                    ], $status);
+                }
+
+                if ($e instanceof AuthorizationException) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Proibido',
+                        'status_code' => 403
+                    ], 403);
                 }
 
                 if ($e instanceof ModelNotFoundException) {
@@ -53,7 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 if ($e instanceof QueryException) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Erro no banco de dados',
+                        'message' => 'Erro interno do servidor',
                         'status_code' => 500
                     ], 500);
                 }

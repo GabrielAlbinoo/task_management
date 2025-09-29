@@ -12,10 +12,15 @@ class AuthService {
     {
         try {
             $user = User::create($data);
-            
+            $token = $user->createToken('auth_token')->plainTextToken;
+
             return [
-                'name' => $user->name,
-                'email' => $user->email,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email
+                ],
+                'token' => $token,
             ];
         } catch (\Exception $e) {
             throw new ApiException('Erro ao criar usuário: ' . $e->getMessage(), 500);

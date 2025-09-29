@@ -6,11 +6,11 @@
     $fg = '#374151';
 
     if ($text === 'aberto') {
-        $bg = '#d1fae5';
-        $fg = '#065f46';
-    } elseif ($text === 'em_andamento') {
         $bg = '#dbeafe';
         $fg = '#1e40af';
+    } elseif ($text === 'em_andamento') {
+        $bg = '#fef3c7';
+        $fg = '#92400e';
     } elseif ($text === 'finalizado') {
         $bg = '#fee2e2';
         $fg = '#991b1b';

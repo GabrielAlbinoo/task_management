@@ -87,7 +87,17 @@ class Task extends Component
         $this->responsavel = null;
     }
 
-    public function resetPageOnFilter(): void
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterStatus(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterPriority(): void
     {
         $this->resetPage();
     }

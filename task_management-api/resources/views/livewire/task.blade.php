@@ -3,13 +3,13 @@
         <h1 style="margin:0;">Tarefas</h1>
         <div style="display:flex;gap:8px;align-items:center;flex:1;justify-content:flex-end;flex-wrap:wrap;">
             <input type="text" placeholder="Buscar por título" wire:model.live.debounce.400ms="search" style="flex:1;min-width:220px;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-            <select wire:model.live="filterStatus" wire:change="resetPageOnFilter" style="padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+            <select wire:model.live="filterStatus" style="padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                 <option value="">Todos status</option>
                 <option value="aberto">Aberto</option>
                 <option value="em_andamento">Em andamento</option>
                 <option value="finalizado">Finalizado</option>
             </select>
-            <select wire:model.live="filterPriority" wire:change="resetPageOnFilter" style="padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+            <select wire:model.live="filterPriority" style="padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                 <option value="">Todas prioridades</option>
                 <option value="baixa">Baixa</option>
                 <option value="media">Média</option>

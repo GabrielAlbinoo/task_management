@@ -1,4 +1,4 @@
-import { finalizedOption, inProgressOption, openOption } from "@/navigation/tabOptions";
+import { finalizedOption, inProgressOption, openOption } from "./tabOptions";
 import { colors } from "@/theme/global";
 import { Tabs } from "expo-router";
 

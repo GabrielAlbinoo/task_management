@@ -24,8 +24,23 @@ class Task extends Model
         'atualizado_em' => 'datetime',
     ];
 
+    protected $appends = [
+        'responsavel_nome',
+        'responsavel_email',
+    ];
+
     public function responsavelUser()
     {
         return $this->belongsTo(User::class, 'responsavel');
+    }
+
+    public function getResponsavelNomeAttribute()
+    {
+        return $this->responsavelUser?->name;
+    }
+
+    public function getResponsavelEmailAttribute()
+    {
+        return $this->responsavelUser?->email;
     }
 }

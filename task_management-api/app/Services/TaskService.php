@@ -13,7 +13,9 @@ class TaskService
 {
     public function getAllTasks(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $query = Task::query()->orderBy('criado_em', 'desc');
+        $query = Task::query()
+            ->with(['responsavelUser:id,name,email'])
+            ->orderBy('criado_em', 'desc');
         
         $this->applyFilters($query, $filters);
         
@@ -35,7 +37,7 @@ class TaskService
         try {
             $task = Task::findOrFail($id);
             $task->update($data);
-            return $task->fresh();
+            return $task->fresh(['responsavelUser']);
         } catch (ModelNotFoundException $e) {
             throw new ApiException('Tarefa não encontrada', 404);
         } catch (\Exception $e) {
@@ -58,7 +60,7 @@ class TaskService
     public function findTask(int $id): Task
     {
         try {
-            return Task::findOrFail($id);
+            return Task::with(['responsavelUser:id,name,email'])->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             throw new ApiException('Tarefa não encontrada', 404);
         }
@@ -80,7 +82,7 @@ class TaskService
             $task->status = 'finalizado';
             $task->save();
 
-            return $task->fresh();
+            return $task->fresh(['responsavelUser']);
         } catch (ModelNotFoundException $e) {
             throw new ApiException('Tarefa não encontrada', 404);
         } catch (ApiException $e) {
@@ -108,7 +110,7 @@ class TaskService
                 $task->status = 'em_andamento';
                 $task->save();
 
-                return $task->fresh();
+                return $task->fresh(['responsavelUser']);
             });
         } catch (ModelNotFoundException $e) {
             throw new ApiException('Tarefa não encontrada', 404);

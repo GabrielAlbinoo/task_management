@@ -1,10 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 
-
 type IconProps = {
   color: string;
   size: number;
-}
+};
 
 export const openOption = {
   title: "Aberto",
@@ -22,7 +21,7 @@ export const inProgressOption = {
 
 export const finalizedOption = {
   title: "Finalizado",
-  tabBarIcon: ({color, size}: IconProps) => (
+  tabBarIcon: ({ color, size }: IconProps) => (
     <Ionicons name="checkmark-done-outline" size={size} color={color} />
-  )
+  ),
 };

@@ -1,23 +1,18 @@
 import FormTextInput from "@/components/FormTextInput";
+import SubmitButton from "@/components/SubmitButton";
 import { register as registerService } from "@/services/auth";
 import { colors } from "@/theme/global";
 import { getErrorMessage } from "@/utils/errorHandler";
-import {
-    hasMinLength,
-    hasMinTrimmedLength,
-    isValidEmail,
-} from "@/utils/validators";
+import { hasMinLength, isValidEmail } from "@/utils/validators";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function Register() {
@@ -29,7 +24,7 @@ export default function Register() {
 
   const isEmailValid = useMemo(() => isValidEmail(email), [email]);
   const isPasswordValid = useMemo(() => hasMinLength(password, 8), [password]);
-  const isNameValid = useMemo(() => hasMinTrimmedLength(name, 2), [name]);
+  const isNameValid = useMemo(() => hasMinLength(name, 2), [name]);
   const isFormValid = isEmailValid && isPasswordValid && isNameValid;
 
   const registerMutation = useMutation({
@@ -38,7 +33,10 @@ export default function Register() {
       router.replace("/open");
     },
     onError: (error: any) => {
-      const errorMessage = getErrorMessage(error, 'Não foi possível registrar. Tente novamente.');
+      const errorMessage = getErrorMessage(
+        error,
+        "Não foi possível registrar. Tente novamente."
+      );
       setError(errorMessage);
     },
   });
@@ -53,10 +51,7 @@ export default function Register() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.select({ ios: "padding", android: undefined })}
-    >
+    <KeyboardAvoidingView style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.title}>Criar conta</Text>
 
@@ -64,12 +59,7 @@ export default function Register() {
           label="Nome"
           value={name}
           onChangeText={setName}
-          placeholder="Seu nome"
-          helperText={
-            !isNameValid && name.length > 0
-              ? "O nome deve ter ao menos 2 caracteres."
-              : null
-          }
+          placeholder="Digite seu nome"
         />
 
         <FormTextInput
@@ -80,49 +70,30 @@ export default function Register() {
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
-          helperText={
-            !isEmailValid && email.length > 0
-              ? "Informe um e-mail válido."
-              : null
-          }
         />
 
         <FormTextInput
           label="Senha"
           value={password}
           onChangeText={setPassword}
-          placeholder="Crie uma senha"
+          placeholder="Digite sua senha"
           secureTextEntry
-          helperText={
-            !isPasswordValid && password.length > 0
-              ? "A senha deve ter ao menos 8 caracteres."
-              : null
-          }
         />
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <TouchableOpacity
-          disabled={!isFormValid || registerMutation.isPending}
-          style={[
-            styles.button,
-            (!isFormValid || registerMutation.isPending) &&
-              styles.buttonDisabled,
-          ]}
+        <SubmitButton
+          text="Registrar"
           onPress={handleRegister}
-        >
-          {registerMutation.isPending ? (
-            <ActivityIndicator color={colors.neutral.white} />
-          ) : (
-            <Text style={styles.buttonText}>Registrar</Text>
-          )}
-        </TouchableOpacity>
+          loading={registerMutation.isPending}
+          disabled={!isFormValid}
+        />
 
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.secondaryLink}
         >
-          <Text style={styles.secondaryText}>Já tem uma conta? Entrar</Text>
+          <Text style={styles.secondaryText}>Login</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -178,22 +149,6 @@ const styles = StyleSheet.create({
     color: colors.danger,
     marginBottom: 12,
     marginTop: 4,
-  },
-  button: {
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: colors.buttons.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 4,
-  },
-  buttonDisabled: {
-    backgroundColor: colors.neutral.light,
-  },
-  buttonText: {
-    color: colors.neutral.white,
-    fontWeight: "700",
-    fontSize: 16,
   },
   secondaryLink: {
     alignItems: "center",

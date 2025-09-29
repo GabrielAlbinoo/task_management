@@ -1,14 +1,39 @@
 import InfoCard from "@/components/InfoCard";
 import InfoRow from "@/components/InfoRow";
-import Tag from "@/components/tag";
+import Tag from "@/components/Tag";
+import { useTaskAction } from "@/hooks/useTaskAction";
+import { Task, fetchTaskById } from "@/services/task";
 import { colors } from "@/theme/global";
+import { getPriorityLabel, getPriorityVariant, getStatusLabel, getStatusVariant } from "@/utils/taskHelpers";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useMemo } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function Details() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string }>();
+  const taskId = useMemo(() => Number(params.id), [params.id]);
+
+  const {
+    data: task,
+    isLoading,
+    isError,
+  } = useQuery<Task>({
+    queryKey: ["task", taskId],
+    queryFn: () => fetchTaskById(taskId),
+    enabled: Number.isFinite(taskId),
+  });
+
+  const { primaryAction } = useTaskAction(task);
 
   return (
     <View style={styles.container}>
@@ -19,9 +44,20 @@ export default function Details() {
           </Pressable>
           <Text style={styles.headerTitle}>Detalhes da Tarefa</Text>
         </View>
+
         <View style={styles.tagsContainer}>
-          <Tag text="Aberto" variant="primary" />
-          <Tag text="Alta Prioridade" variant="danger" />
+          {!!task && (
+            <>
+              <Tag
+                text={getStatusLabel(task.status)}
+                variant={getStatusVariant(task.status)}
+              />
+              <Tag
+                text={getPriorityLabel(task.prioridade)}
+                variant={getPriorityVariant(task.prioridade)}
+              />
+            </>
+          )}
         </View>
       </View>
 
@@ -29,148 +65,70 @@ export default function Details() {
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
       >
-        <InfoCard title="Informações Gerais">
-          <InfoRow label="Título" value="testando" />
-          <InfoRow label="Responsável" value="Gabriel Albino" />
-          <InfoRow label="Criado em" value="15 Jan 2024" />
-          <InfoRow label="Atualizado em" value="22 Jan 2024" />
-        </InfoCard>
+        {isLoading && (
+          <View style={{ paddingVertical: 32, alignItems: "center" }}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        )}
 
-        <InfoCard title="Descrição">
-          <Text style={styles.description}>
-            Implementar sistema completo de autenticação OAuth para permitir
-            login social com Google e Facebook. A implementação deve incluir
-            configuração dos provedores OAuth, interface de login responsiva,
-            tratamento de erros e casos edge, e testes unitários e de
-            integração. Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, Implementar sistema completo de autenticação OAuth para
-            permitir login social com Google e Facebook. A implementação deve
-            incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva, tratamento de erros e casos edge, e testes unitários e
-            de integração. Implementar sistema completo de autenticação OAuth
-            para permitir login social com Google e Facebook. A implementação
-            deve incluir configuração dos provedores OAuth, interface de login
-            responsiva,
-          </Text>
-        </InfoCard>
+        {isError && (
+          <View style={{ paddingVertical: 32, alignItems: "center" }}>
+            <Text style={{ color: colors.danger }}>
+              Não foi possível carregar a tarefa
+            </Text>
+          </View>
+        )}
+
+        {!!task && (
+          <InfoCard title="Informações Gerais">
+            <InfoRow label="Título" value={task?.titulo ?? "-"} />
+            <InfoRow
+              label="Responsável"
+              value={String(task?.responsavel_nome ?? "-")}
+            />
+            <InfoRow label="Criado em" value={formatDate(task?.criado_em)} />
+            <InfoRow
+              label="Atualizado em"
+              value={formatDate(task?.atualizado_em)}
+            />
+          </InfoCard>
+        )}
+
+        {!!task && (
+          <InfoCard title="Descrição">
+            <Text style={styles.description}>{task?.descricao ?? "-"}</Text>
+          </InfoCard>
+        )}
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.actionButton}>
-          <Text style={styles.actionButtonText}>Pegar Tarefa</Text>
-        </Pressable>
+        {primaryAction.visible && (
+          <Pressable
+            style={styles.actionButton}
+            onPress={primaryAction.onPress}
+            disabled={primaryAction.disabled}
+          >
+            <Text style={styles.actionButtonText}>{primaryAction.label}</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
+}
+
+
+function formatDate(value?: string) {
+  if (!value) return "-";
+  try {
+    const date = new Date(value);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return String(value);
+  }
 }
 
 const styles = StyleSheet.create({

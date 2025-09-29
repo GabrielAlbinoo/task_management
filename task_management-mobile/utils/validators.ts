@@ -4,13 +4,5 @@ export function isValidEmail(email: string): boolean {
 }
 
 export function hasMinLength(value: string, minLength: number): boolean {
-  return (value ?? '').length >= minLength;
+  return (value ?? "").trim().length >= minLength;
 }
-
-export function hasMinTrimmedLength(value: string, minLength: number): boolean {
-  return (value ?? '').trim().length >= minLength;
-}
-
-
-
-
