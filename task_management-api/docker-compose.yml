@@ -24,6 +24,8 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
+    tmpfs:
+      - /var/www/html/vendor
     ports:
       - "8000:8000"
     depends_on:
@@ -35,12 +37,14 @@ services:
       DB_USERNAME: admin
       DB_PASSWORD: secret123
     command: >
-      bash -c "
-        composer install &&
-        cp .env.example .env 2>/dev/null || true &&
-        php artisan key:generate 2>/dev/null || true &&
-        php artisan migrate --force &&
-        php artisan db:seed --force &&
+      bash -lc "
+        set -euo pipefail
+        cd /var/www/html
+        composer install --no-interaction --prefer-dist
+        if [ ! -f .env ]; then cp .env.example .env; fi
+        if ! grep -Eq '^APP_KEY=.+$' .env; then php artisan key:generate --force; fi
+        php artisan migrate --force
+        if [ ! -f storage/app/.docker_seeded ]; then php artisan db:seed --force && touch storage/app/.docker_seeded; fi
         php artisan serve --host=0.0.0.0 --port=8000
       "
 
